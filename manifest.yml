@@ -7,8 +7,8 @@ declared-services:
     label: tone_analyzer
     plan: beta
 applications:
-- name: moods 
-  host: moods 
+- name: moods-guru
+  host: moods-guru
   memory: 256M
   instances: 1
   path: .
