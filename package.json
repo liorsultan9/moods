@@ -11,9 +11,9 @@
   "dependencies": {
     "express": "4.13.x",
     "body-parser": "1.14.x",
-    "watson-developer-cloud": "1.8.x",
+    "watson-developer-cloud": "3.13.x",
     "cfenv": "1.0.x",
-    "bower": "1.6.x",
+    "bower": "1.8.x",
     "gulp": "3.5.x",
     "cf-deployment-tracker-client": "0.0.x",
     "vcap_services": "~0.2.0"
@@ -22,7 +22,7 @@
     "browserify": "^12.0.1",
     "browserify-shim": "^3.8.12",
     "watchify": "^3.6.1",
-    "uglifyjs": "^2.4.10"
+    "uglifyjs": "^3.4.9"
   },
   "repository": {
     "type": "git",
