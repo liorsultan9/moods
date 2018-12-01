@@ -15,14 +15,13 @@
     "cfenv": "1.0.x",
     "bower": "1.8.x",
     "gulp": "3.5.x",
-    "cf-deployment-tracker-client": "0.0.x",
     "vcap_services": "~0.2.0"
   },
   "devDependencies": {
     "browserify": "^12.0.1",
     "browserify-shim": "^3.8.12",
     "watchify": "^3.6.1",
-    "uglifyjs": "^3.4.9"
+    "uglifyjs": "3.4.9"
   },
   "repository": {
     "type": "git",
