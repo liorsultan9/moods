@@ -4,7 +4,7 @@
   "description": "Analyze the tone of spoken words in real time using Bluemix and Watson",
   "scripts": {
     "start": "node app.js",
-    "build": "browserify src/index.js | uglifyjs -nc > public/js/index.js",
+    "build": "browserify src/index.js | uglifyjs > public/js/index.js",
     "watch": "watchify -v -d -o public/js/index.js src/index.js",
     "postinstall": "bower install --alow-root && gulp"
   },
