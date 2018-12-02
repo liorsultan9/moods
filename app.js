@@ -47,9 +47,6 @@ app.use(bodyParser.json({
 }));
 app.use(express.static(__dirname + '/public'));
 
-// Deployment tracker code snippet
-require("cf-deployment-tracker-client").track();
-
 // Start listening for connections
 app.listen(appEnv.port, function () {
     console.log("server started at", appEnv.url);
