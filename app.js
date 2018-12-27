@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+require('dotenv').config({silent: true});
+
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
 var express = require('express'),
@@ -53,17 +55,48 @@ app.listen(appEnv.port, function () {
 });
 
 // Configure Watson Speech to Text service
-var speechCreds = getServiceCreds(appEnv, 'moods-stt');
-speechCreds.version = 'v1';
-var authService = watson.authorization(speechCreds);
+// var speechCreds = getServiceCreds(appEnv, 'moods-stt');
+// speechCreds.version = 'v1';
+// var authService = watson.authorization(speechCreds);
 
 // Configure Watson Speech to Text service
-var toneCreds = getServiceCreds(appEnv, 'tone-analyzer-moods');
-toneCreds.version = 'v3';
-toneCreds.version_date = '2016-05-19';
-var toneAnalyzer = watson.tone_analyzer(toneCreds);
+const SpeechToTextV1 = require('watson-developer-cloud/speech-to-text/v1');
+const AuthorizationV1 = require('watson-developer-cloud/authorization/v1');
+const IamTokenManagerV1 = require('watson-developer-cloud/iam-token-manager/v1');
 
-console.log(toneAnalyzer);
+// Bootstrap application settings
+//require('./config/express')(app);
+
+// Create the token manager
+let tokenManager;
+let instanceType;
+const serviceUrl = process.env.SPEECH_TOTEXT_URL || 'https://stream.watsonplatform.net/speech-to-text/api';
+
+if (process.env.SPEECH_TOTEXT_IAM_APIKEY && process.env.SPEECH_TOTEXT_IAM_APIKEY !== '') {
+  instanceType = 'iam';
+  tokenManager = new IamTokenManagerV1.IamTokenManagerV1({
+    iamApikey: process.env.SPEECH_TOTEXT_IAM_APIKEY || 'undefined var: SPEECH_TOTEXT_IAM_APIKEY',
+    iamUrl: process.env.SPEECH_TOTEXT_IAM_URL || 'undefined var: SPEECH_TOTEXT_IAM_URL'
+  });
+} else {
+  instanceType = 'cf';
+  const speechService = new SpeechToTextV1({
+    username: process.env.SPEECH_TOTEXT_USERNAME || '<username>',
+    password: process.env.SPEECH_TOTEXT_PASSWORD || '<password>',
+    url: serviceUrl,
+  });
+  tokenManager = new AuthorizationV1(speechService.getCredentials());
+}
+
+// console.log(instanceType + JSON.stringify(tokenManager));
+
+var ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
+var toneAnalyzer = new ToneAnalyzerV3({
+	iam_apikey: process.env.TONE_ANALYZER_IAM_APIKEY || 'undefined var: TONE_ANALYZER_IAM_APIKEY',  
+	version: process.env.TONE_ANALYZER_VERSION || 'undefined var: TONE_ANALYZER_VERSION'
+	});
+
+// console.log('toneAnalyzer '+ JSON.stringify(toneAnalyzer));
 
 // Root page handler
 app.get('/', function (req, res) {
@@ -74,23 +107,37 @@ app.get('/', function (req, res) {
 
 // Get token using your credentials
 app.post('/api/token', function (req, res, next) {
-    authService.getToken({
-        url: speechCreds.url
-    }, function (err, token) {
-        if (err)
-            next(err);
-        else
-            res.send(token);
-    });
+	tokenManager.getToken((err, token) => {
+	    if (err) {
+	      next(err);
+	    } else {
+	      let credentials;
+	      if (instanceType === 'iam') {
+	        credentials = {
+	          accessToken: token,
+	          serviceUrl,
+	        };
+	      } else {
+	        credentials = {
+	          token,
+	          serviceUrl,
+	        };
+	      }
+	      console.log('POST api/token' + JSON.stringify(credentials));
+	      res.json(credentials);
+	    }
+	  });
 });
 
 // Request handler for tone analysis
 app.post('/api/tone', function (req, res, next) {
-    toneAnalyzer.tone(req.body, function (err, data) {
+	toneAnalyzer.tone(req.body, function (err, data) {
         if (err)
             return next(err);
-        else
-            return res.json(data);
+        else {
+//            console.log(JSON.stringify(data));
+        	return res.json(data);
+        }
     });
 });
 

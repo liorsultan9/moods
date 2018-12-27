@@ -23,14 +23,17 @@ exports.getModels = function(token) {
     token: token,
     bufferSize: BUFFERSIZE
   };
-  var modelUrl = 'https://stream.watsonplatform.net/speech-to-text/api/v1/models';
+  var modelUrl = 'https://stream.watsonplatform.net/speech-to-text/api/v1/models' + '?access_token=' + JSON.parse(token).accessToken;
+//  console.log(modelUrl);
   var sttRequest = new XMLHttpRequest();
   sttRequest.open('GET', modelUrl, true);
   sttRequest.withCredentials = true;
   sttRequest.setRequestHeader('Accept', 'application/json');
-  sttRequest.setRequestHeader('X-Watson-Authorization-Token', token);
+//  console.log('token '+ token);
+//  console.log('accessToken '+ JSON.parse(token).accessToken);
   sttRequest.onload = function() {
     var response = JSON.parse(sttRequest.responseText);
+	console.log(response);
     var sorted = response.models.sort(function(a,b) {
     if(a.name > b.name) {
       return 1;

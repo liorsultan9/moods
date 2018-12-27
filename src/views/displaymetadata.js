@@ -130,7 +130,8 @@ var initTextScroll = function() {
 function updateScroll(){
   if(!scrolled){
     var element = $('.table-scroll').get(0);
-    element.scrollTop = element.scrollHeight;
+    if(element)
+    	element.scrollTop = element.scrollHeight;
   }
 }
 

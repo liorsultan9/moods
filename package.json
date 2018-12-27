@@ -9,6 +9,7 @@
     "postinstall": "bower install --alow-root && gulp"
   },
   "dependencies": {
+    "dotenv": "^2.0.0",
     "express": "4.13.x",
     "body-parser": "1.14.x",
     "watson-developer-cloud": "3.12.x",
